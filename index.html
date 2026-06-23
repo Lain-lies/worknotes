@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script src="index.js" defer></script>
+		<title>Worknotes | by: Lain</title>
+		<style>
+			* {
+				box-sizing: border-box;
+				font-family: sans-serif;
+			}
+			input,
+			textarea {
+				display: block;
+				font-size: 1rem;
+				margin-bottom: 1rem;
+			}
+
+			textarea {
+				width: 100%;
+			}
+
+			input[type="checkbox"] {
+				width: 20px;
+				height: 20px;
+				margin-right: 0.5rem;
+				vertical-align: middle;
+			}
+
+			input[type="checkbox"]:hover {
+				cursor: pointer;
+				filter: brightness(1.2);
+			}
+
+			header {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				gap: 1rem;
+			}
+
+			h1 {
+				display: inline-block;
+			}
+
+			.logo {
+				display: inline-block;
+				width: 60px;
+			}
+
+			img {
+				overflow: hidden;
+				width: 100%;
+				border-radius: 50%;
+			}
+
+			button {
+				display: block;
+				margin-bottom: 1rem;
+			}
+
+			button:hover {
+				cursor: pointer;
+				filter: brightness(1.2);
+			}
+
+			#saveTicketButton {
+				padding: 1rem;
+			}
+
+			.control-panel {
+				border: 1px solid #000;
+				padding: 1rem;
+				margin-bottom: 1rem;
+			}
+
+			.switch-click {
+				margin-top: 0.5rem;
+				font-size: 1rem;
+				padding: 0.5rem 1rem;
+			}
+
+			#session-individual-record > button {
+				font-size: 1rem;
+				padding: 0.75rem 0.5rem;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<h1>Worknotes</h1>
+			<div class="logo">
+				<img
+					src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwi1tt9wRKB9WFZV2JVO_y9kU_Db9Sb5atdw&s"
+					alt="BetterNotes Logo" />
+			</div>
+		</header>
+		<p>ver. 0.9.0</p>
+
+		<form id="createSessionForm">
+			<label for="sessionName">
+				Create New Session :
+				<input
+					type="text"
+					id="sessionName"
+					name="sessionName"
+					placeholder="Enter session name"
+					required />
+			</label>
+
+			<button type="submit">Create Session</button>
+		</form>
+
+		<div class="control-panel">
+			<h3>Current Session:</h3>
+			<p id="currentSessionName"></p>
+
+			<h3><b>Sessions:</b></h3>
+			<ul id="session-list"></ul>
+
+			<h3>Session Records: Export</h3>
+			<ul id="exportable-list"></ul>
+
+			<hr />
+			<hr />
+
+			<h3>History</h3>
+			<div id="session-history"></div>
+		</div>
+
+		<button id="hide-control-panel">HIDE CONTROL PANEL</button>
+
+		<hr />
+		<h3>New Note:</h3>
+
+		<form id="ticketForm">
+			<h3>Mode:</h3>
+			<button type="button" id="calltype">Caller</button>
+
+			<h3>Type</h3>
+			<button type="button" id="doctype">Incident</button>
+
+			<label>
+				Employee ID:
+				<input
+					type="text"
+					name="employeeId"
+					placeholder="Enter Employee ID"
+					required />
+			</label>
+
+			<label>
+				First and Last Name:
+				<input
+					type="text"
+					name="fullName"
+					placeholder="Enter Full Name"
+					required />
+			</label>
+
+			<label>
+				Email Address:
+				<input
+					type="email"
+					name="email"
+					placeholder="Enter Email Address"
+					required />
+			</label>
+
+			<label>
+				Contact Number:
+				<input
+					type="text"
+					name="contactNumber"
+					placeholder="Enter Contact Number"
+					required />
+			</label>
+
+			<label>
+				Availability Hours:
+				<input
+					type="text"
+					name="availability"
+					placeholder="Enter Best Time to Reach"
+					value="9am-4pm"
+					required />
+			</label>
+
+			<label>
+				Location:
+				<input
+					type="text"
+					name="location"
+					placeholder="Enter Location"
+					required />
+			</label>
+
+			<hr />
+			<div id="onbehalf">
+				<h3>User</h3>
+
+				<label>
+					Employee ID:
+					<input
+						type="text"
+						name="OBemployeeId"
+						placeholder="Enter Employee ID"
+						value="N/A"
+						required />
+				</label>
+
+				<label>
+					First and Last Name:
+					<input
+						type="text"
+						name="OBfullName"
+						placeholder="Enter Full Name"
+						value="N/A"
+						required />
+				</label>
+
+				<label>
+					Email Address:
+					<input
+						type="text"
+						name="OBemail"
+						placeholder="Enter Email Address"
+						value="N/A" />
+				</label>
+
+				<label>
+					Contact Number:
+					<input
+						type="text"
+						name="OBcontactNumber"
+						placeholder="Enter Contact Number"
+						value="N/A"
+						required />
+				</label>
+
+				<label>
+					Availability Hours:
+					<input
+						type="text"
+						name="OBavailability"
+						placeholder="Enter Best Time to Reach"
+						value="8am-5pm"
+						value="N/A"
+						required />
+				</label>
+
+				<label>
+					Location:
+					<input
+						type="text"
+						name="OBlocation"
+						placeholder="Enter Location"
+						value="N/A"
+						required />
+				</label>
+			</div>
+			<hr />
+
+			<div class="inc">
+				<label>
+					Possible Major Incident?
+					<input type="input" name="possibleMajorIncident" />
+				</label>
+			</div>
+
+			<label>
+				Existing Ticket?:
+				<input type="input" name="existingTicket" value="N/A" />
+			</label>
+
+			<div class="inc">
+				<label>
+					Contact type:
+					<input type="input" name="contactType" />
+				</label>
+			</div>
+
+			<div class="inc">
+				<label>
+					Machine name:
+					<input type="input" name="machineName" value="N/A" />
+				</label>
+				<label>
+					Nexthink Checklist:
+					<input type="input" name="nexthinkChecklist" value="N/A" />
+				</label>
+			</div>
+
+			<div class="pwr">
+				<label>
+					New Hire:
+					<input type="input" name="newHire" />
+				</label>
+
+				<label>
+					MFA Registered:
+					<input type="input" name="mfaRegistered" />
+				</label>
+
+				<label>
+					SSPR Offered:
+					<input type="input" name="ssprOffered" />
+				</label>
+
+				<label>
+					SSPR Outcome:
+					<input type="input" name="ssprOutcome" value="N/A" />
+				</label>
+			</div>
+
+			<hr />
+			<hr />
+
+			<label>
+				Issue Description:
+				<textarea
+					name="issueDescription"
+					rows="5"
+					cols="50"
+					placeholder="Describe the issue"></textarea>
+			</label>
+
+			<label>
+				Resolution Notes:
+				<textarea name="resolutionNotes" rows="10"></textarea>
+			</label>
+
+			<hr />
+			<hr />
+
+			<label>
+				KB Article Used:
+				<input
+					type="text"
+					name="kbArticle"
+					placeholder="Enter KB Article"
+					required />
+			</label>
+
+			<div class="inc">
+				<label>
+					Issue Resolved?
+					<input type="input" name="issueResolved" />
+				</label>
+			</div>
+
+			<div class="pwr">
+				<label>
+					Ticket Fulfilled?
+					<input type="input" name="ticketFulfilled" />
+				</label>
+			</div>
+
+			<label>
+				Next Action(s):
+				<textarea
+					name="nextActions"
+					rows="4"
+					cols="50"
+					placeholder="Enter next actions"></textarea>
+			</label>
+
+			<div class="inc">
+				<label>
+					User agreed to set ticket to Resolved?
+					<input type="iput" name="userAgreedResolved" />
+				</label>
+			</div>
+
+			<div class="pwr">
+				<label>
+					User agreed to fulfill the ticket?
+					<input type="iput" name="userAgreedFulfill" />
+				</label>
+			</div>
+
+			<hr />
+			<button type="submit" id="saveTicketButton">Save Ticket</button>
+			<button type="button" id="cancelButton">Cancel</button>
+			<button type="button" id="newNoteButton">New Note</button>
+		</form>
+
+		<button type="button" id="fillTestData">Fill Test Data</button>
+		<hr />
+
+		<footer>
+			<p>
+				BetterNotes &copy; 2026 | GitHub:
+				<a href="https://github.com/Lain-lies/worknotes" target="_blank"
+					>BetterNotes</a
+				>
+			</p>
+		</footer>
+	</body>
+</html>
