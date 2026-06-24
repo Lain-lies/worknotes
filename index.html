@@ -4,12 +4,13 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<script src="index.js" defer></script>
-		<title>Worknotes | by: Lain</title>
+		<title>Flownotes</title>
 		<style>
 			* {
 				box-sizing: border-box;
 				font-family: sans-serif;
 			}
+
 			input,
 			textarea {
 				display: block;
@@ -19,18 +20,6 @@
 
 			textarea {
 				width: 100%;
-			}
-
-			input[type="checkbox"] {
-				width: 20px;
-				height: 20px;
-				margin-right: 0.5rem;
-				vertical-align: middle;
-			}
-
-			input[type="checkbox"]:hover {
-				cursor: pointer;
-				filter: brightness(1.2);
 			}
 
 			header {
@@ -85,41 +74,60 @@
 				font-size: 1rem;
 				padding: 0.75rem 0.5rem;
 			}
+
+			#mode-and-type {
+				display: flex;
+				gap: 0.5rem;
+				align-items: center;
+			}
+			#mode-and-type > button {
+				margin-bottom: 0;
+				font-size: 1rem;
+			}
+
+			.availability-container {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+			}
+
+			.availability-container > button {
+				font-size: 0.8rem;
+			}
 		</style>
 	</head>
 	<body>
 		<header>
-			<h1>Worknotes</h1>
+			<h1>Flownotes</h1>
 			<div class="logo">
 				<img
-					src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwi1tt9wRKB9WFZV2JVO_y9kU_Db9Sb5atdw&s"
-					alt="BetterNotes Logo" />
+					src="https://static.vecteezy.com/system/resources/thumbnails/053/366/663/small_2x/wave-rgb-color-icon-symbolizing-ocean-tides-currents-coastal-and-marine-environments-tsunami-natural-disaster-isolated-illustration-simple-filled-line-drawing-editable-stroke-vector.jpg"
+					alt="Flownotes Logo" />
 			</div>
 		</header>
-		<p>ver. 0.9.0</p>
-
-		<form id="createSessionForm">
-			<label for="sessionName">
-				Create New Session :
-				<input
-					type="text"
-					id="sessionName"
-					name="sessionName"
-					placeholder="Enter session name"
-					required />
-			</label>
-
-			<button type="submit">Create Session</button>
-		</form>
+		<p>ver 1.0.0</p>
 
 		<div class="control-panel">
-			<h3>Current Session:</h3>
+			<form id="createSessionForm">
+				<label for="sessionName">
+					Create New Session :
+					<input
+						type="text"
+						id="sessionName"
+						name="sessionName"
+						placeholder="Enter session name"
+						required />
+				</label>
+
+				<button type="submit">Create Session</button>
+			</form>
+			<h4>Current Session:</h4>
 			<p id="currentSessionName"></p>
 
-			<h3><b>Sessions:</b></h3>
+			<h4>Session List:</h4>
 			<ul id="session-list"></ul>
 
-			<h3>Session Records: Export</h3>
+			<h4>Session History</h4>
 			<ul id="exportable-list"></ul>
 
 			<hr />
@@ -129,18 +137,20 @@
 			<div id="session-history"></div>
 		</div>
 
-		<button id="hide-control-panel">HIDE CONTROL PANEL</button>
+		<button id="hide-control-panel">Hide Control Panel</button>
 
 		<hr />
-		<h3>New Note:</h3>
 
 		<form id="ticketForm">
-			<h3>Mode:</h3>
-			<button type="button" id="calltype">Caller</button>
+			<div id="mode-and-type">
+				<h3>Call Type:</h3>
+				<button type="button" id="calltype">Caller</button>
 
-			<h3>Type</h3>
-			<button type="button" id="doctype">Incident</button>
+				<h3>Document Type:</h3>
+				<button type="button" id="doctype">Incident</button>
+			</div>
 
+			<h3>Caller</h3>
 			<label>
 				Employee ID:
 				<input
@@ -177,15 +187,18 @@
 					required />
 			</label>
 
-			<label>
-				Availability Hours:
-				<input
-					type="text"
-					name="availability"
-					placeholder="Enter Best Time to Reach"
-					value="9am-4pm"
-					required />
-			</label>
+			<div class="availability-container">
+				<label>
+					Availability Hours:
+					<input
+						type="text"
+						name="availability"
+						placeholder="Enter Best Time to Reach"
+						value="9am-4pm"
+						required />
+				</label>
+				<input type="text" name="timezone" value="EST" required />
+			</div>
 
 			<label>
 				Location:
@@ -238,17 +251,19 @@
 						value="N/A"
 						required />
 				</label>
+				<div class="availability-container">
+					<label>
+						Availability Hours:
+						<input
+							type="text"
+							name="OBavailability"
+							placeholder="Enter Best Time to Reach"
+							value="9am-4pm"
+							required />
+					</label>
 
-				<label>
-					Availability Hours:
-					<input
-						type="text"
-						name="OBavailability"
-						placeholder="Enter Best Time to Reach"
-						value="8am-5pm"
-						value="N/A"
-						required />
-				</label>
+					<input type="text" name="OBtimezone" value="EST" required />
+				</div>
 
 				<label>
 					Location:
@@ -271,7 +286,7 @@
 
 			<label>
 				Existing Ticket?:
-				<input type="input" name="existingTicket" value="N/A" />
+				<input type="input" name="existingTicket" value="No" />
 			</label>
 
 			<div class="inc">
@@ -322,7 +337,6 @@
 				<textarea
 					name="issueDescription"
 					rows="5"
-					cols="50"
 					placeholder="Describe the issue"></textarea>
 			</label>
 
@@ -331,7 +345,6 @@
 				<textarea name="resolutionNotes" rows="10"></textarea>
 			</label>
 
-			<hr />
 			<hr />
 
 			<label>
@@ -391,9 +404,9 @@
 
 		<footer>
 			<p>
-				BetterNotes &copy; 2026 | GitHub:
+				Flownotes &copy; 2026 | GitHub:
 				<a href="https://github.com/Lain-lies/worknotes" target="_blank"
-					>BetterNotes</a
+					>worknotes</a
 				>
 			</p>
 		</footer>

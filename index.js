@@ -64,6 +64,7 @@ const storageState = {
 		this.setRecord(sessionData);
 		this.setCurrentSessionName(sessionName);
 
+		alert(`Session Loaded: ${this.getCurrentSessionName()}`);
 		console.log(`
 Current Session: ${this.getCurrentSessionName()}
 Current Record: ${this.getRecord()}
@@ -74,7 +75,7 @@ Session List: ${this.getSessionList()}`);
 		this.setRecord([...this.getRecord(), newRecord]);
 
 		localStorage.setItem(
-			this.currentSessionName,
+			this.getCurrentSessionName(),
 			JSON.stringify(this.getRecord()),
 		);
 
@@ -117,8 +118,8 @@ const fieldState = {
 	fieldModified: false,
 	fieldSaved: false,
 	fieldData: {},
-	fieldItselfCall: true,
-	fieldInc: true,
+	fieldIsCaller: true,
+	fieldIsIncident: true,
 
 	// SETTERS //
 
@@ -134,12 +135,12 @@ const fieldState = {
 		this.fieldData = value;
 	},
 
-	setFieldItselfCall: function (value) {
-		this.fieldItselfCall = value;
+	setFieldIsCaller: function (value) {
+		this.fieldIsCaller = value;
 	},
 
-	setFieldInc: function (value) {
-		this.fieldInc = value;
+	setFieldIsIncident: function (value) {
+		this.fieldIsIncident = value;
 	},
 
 	// GETTERS //
@@ -156,12 +157,12 @@ const fieldState = {
 		return this.fieldData;
 	},
 
-	getFieldItselfCall: function () {
-		return this.fieldItselfCall;
+	getFieldIsCaller: function () {
+		return this.fieldIsCaller;
 	},
 
-	getFieldInc: function () {
-		return this.fieldInc;
+	getFieldIsIncident: function () {
+		return this.fieldIsIncident;
 	},
 
 	// HELPERS //
@@ -176,13 +177,12 @@ const fieldState = {
 			this.setFieldSaved(true);
 		}
 
+		console.log(data.isCaller);
+		console.log(data.isIncident);
 		this.setFieldData(data);
+		copyToClipboard(data);
 
-		copyToClipboard(
-			noteTransform(data, this.getFieldInc(), this.getFieldItselfCall()),
-		);
-
-		alert("Record Saved!");
+		alert("Record Saved and Copied to Clipboard");
 	},
 
 	onResetHelper: function () {
@@ -191,7 +191,7 @@ const fieldState = {
 		this.setFieldSaved(false);
 		this.setFieldData({});
 		this.resetSwitchClick();
-		this.setFieldItselfCall(true);
+		this.resetFieldConditions();
 		window.location.href = "#ticketForm";
 	},
 
@@ -218,9 +218,28 @@ const fieldState = {
 	},
 
 	fieldCleaner: function (data) {
-		let _data = null;
-		let temp = null;
-		if (this.getFieldInc() === true) {
+		let filteredDataOne = { ...data };
+		filteredDataOne.isCaller = false;
+
+		if (this.getFieldIsCaller() === true) {
+			const {
+				OBemployeeId,
+				OBemployeeLocation,
+				OBfullName,
+				OBemail,
+				OBcontactNumber,
+				OBavailability,
+				OBtimezone,
+				...OBremoved
+			} = data;
+
+			filteredDataOne = OBremoved;
+			filteredDataOne.isCaller = true;
+		}
+
+		let filteredDataTwo = null;
+
+		if (this.getFieldIsIncident() === true) {
 			const {
 				newHire,
 				mfaRegistered,
@@ -228,9 +247,11 @@ const fieldState = {
 				ssprOutcome,
 				ticketFulfilled,
 				userAgreedFulfill,
-				...cleanData
-			} = data;
-			temp = cleanData;
+				...purified
+			} = filteredDataOne;
+
+			filteredDataTwo = purified;
+			filteredDataTwo.isIncident = true;
 		} else {
 			const {
 				possibleMajorIncident,
@@ -239,28 +260,14 @@ const fieldState = {
 				nexthinkChecklist,
 				issueResolved,
 				userAgreedResolved,
-				...cleanData
-			} = data;
-			temp = cleanData;
+				...purified
+			} = filteredDataOne;
+
+			filteredDataTwo = purified;
+			filteredDataTwo.isIncident = false;
 		}
 
-		if (this.getFieldItselfCall() === true) {
-			const {
-				OBemployeeId,
-				OBemployeeLocation,
-				OBfullName,
-				OBemail,
-				OBcontactNumber,
-				OBavailability,
-				...cleanData
-			} = temp;
-
-			_data = cleanData;
-
-			return _data;
-		}
-
-		return temp;
+		return filteredDataTwo;
 	},
 
 	// SWITCH CLICK //
@@ -272,6 +279,17 @@ const fieldState = {
 		const workSetupOptions = ["WFH", "Office", "Field"];
 		const OBworkSetupOptions = ["N/A", "WFH", "Office", "Field"];
 
+		this.setupSwitchClick(document.querySelector("[name=timezone]"), [
+			"EST",
+			"DST",
+			"IST",
+		]);
+
+		this.setupSwitchClick(document.querySelector("[name=OBtimezone]"), [
+			"EST",
+			"DST",
+			"IST",
+		]);
 		// INC DOCTYPE
 
 		this.setupSwitchClick(
@@ -371,6 +389,15 @@ const fieldState = {
 		this.initSwitchClick();
 	},
 
+	resetFieldConditions: function () {
+		if (this.getFieldIsCaller() === false) {
+			this.fieldCallTypeButton.click();
+		}
+
+		if (this.getFieldIsIncident() === false) {
+			this.fieldDocTypeButton.click();
+		}
+	},
 	// MINIMUM DATA SET AUTOFILL //
 
 	initFieldConditions: function () {
@@ -378,14 +405,15 @@ const fieldState = {
 
 		this.fieldCallTypeButton.addEventListener("click", (e) => {
 			e.preventDefault();
-			if (this.getFieldItselfCall() === true) {
-				this.setFieldItselfCall(false);
+
+			if (this.getFieldIsCaller() === true) {
+				this.setFieldIsCaller(false);
 				this.fieldOnBehalfContainerElement.style.display = "block";
-				e.target.textContent = "OnBehalf";
+				e.target.textContent = "On Behalf";
 			} else {
-				this.setFieldItselfCall(true);
+				this.setFieldIsCaller(true);
 				this.fieldOnBehalfContainerElement.style.display = "none";
-				e.target.textContent = "Itself";
+				e.target.textContent = "Caller";
 			}
 		});
 
@@ -393,9 +421,8 @@ const fieldState = {
 
 		this.fieldDocTypeButton.addEventListener("click", (e) => {
 			e.preventDefault();
-
-			if (this.getFieldInc() === true) {
-				this.setFieldInc(false);
+			if (this.getFieldIsIncident() === true) {
+				this.setFieldIsIncident(false);
 				this.fieldIncNodes.forEach(
 					(element) => (element.style.display = "none"),
 				);
@@ -404,7 +431,7 @@ const fieldState = {
 				);
 				e.target.textContent = "Password Reset";
 			} else {
-				this.setFieldInc(true);
+				this.setFieldIsIncident(true);
 				this.fieldIncNodes.forEach(
 					(element) => (element.style.display = "block"),
 				);
@@ -448,14 +475,12 @@ const fieldState = {
 - User successfully signed in
 - Provided ticket number to user
 - User acknowledged
-- End call 
-
-
-		`;
+- End call`;
 		});
+
 		buttonTwo.addEventListener("click", () => {
 			const resetType = element.value;
-			element.value = `
+			element.value += `
 - Checked Users account via  ${resetType}
 - Verified the user via verification tool
 - User is not verified
@@ -463,9 +488,7 @@ const fieldState = {
 - Advised user that the request is subject to line-manager's approval
 - Provided Ticket Number
 - User Acknowledged
-- End call
-
-		`;
+- End call`;
 		});
 
 		buttonThree.addEventListener("click", () => {
@@ -658,7 +681,8 @@ const controlPanelDisplayState = {
 
 		sessionHistory.forEach((record) => {
 			const button = document.createElement("button");
-			button.textContent = `${record.ticketNumber} | ${record.fullName}`;
+			const doctype = record.isIncident ? "Incident" : "Password Reset";
+			button.textContent = `${record.fullName} | ${doctype}`;
 			button.addEventListener("click", () => {
 				exportIndividualRecord(record);
 			});
@@ -694,92 +718,16 @@ const controlPanelDisplayState = {
 };
 
 // UTILITIES //
-async function copyToClipboard(text) {
+
+async function copyToClipboard(data) {
+	const text = data.isIncident
+		? incidentTypeFormatter(data, data.isCaller)
+		: pwrTypeFormatter(data);
 	try {
 		await navigator.clipboard.writeText(text);
-		alert("Text successfully copied!");
 	} catch (err) {
 		console.error("Failed to copy: ", err);
 	}
-}
-
-function noteTransform(data, isINC, isOB) {
-	let ob = "";
-	if (!isOB) {
-		ob = `
-== USER ==
-
-Employee ID: ${data.OBemployeeId}
-Name: ${data.OBfullName}
-Email Address: ${data.OBemail}
-Contact Number: ${data.OBcontactNumber}
-Availability Hours: ${data.OBbestTimeToReach}
-Location: ${data.OBlocation}
-`;
-	}
-
-	if (isINC) {
-		const notes = `
-== CALLER == 
-
-Employee ID: ${data.employeeId}
-Name: ${data.fullName}
-Email Address: ${data.email}
-Contact Number: ${data.contactNumber}
-Availability Hours: ${data.bestTimeToReach}
-Location: ${data.location}
-
-${ob}
-
-Existing Ticket? ${data.existingTicket}
-
-Possible Major Incident? ${data.possibleMajorIncident}
-Contact Type: ${data.contactType}
-Machine Name: ${data.machineName}
-Nexthink Checklist: ${data.nexthinkChecklist}
-
-ISSUE DESCRIPTION:
-${data.issueDescription}
-
-MINIMUM DATA SET:
-${data.resolutionNotes} 
-
-KB Article: ${data.kbArticle}
-
-Issue Resolved? ${data.issueResolved}
-Next Action(s): ${data.nextActions}
-User agreed to set data to Resolved? ${data.userAgreedResolved}`;
-
-		return notes;
-	}
-	const notes = `
-Employee ID: ${data.employeeId}
-Name: ${data.fullName}
-Email Address: ${data.email}
-Contact Number: ${data.contactNumber}
-Availability Hours: ${data.bestTimeToReach}
-Location: ${data.location}
-
-Existing Ticket? ${data.existingTicket}
-
-New Hire: ${data.newHire}
-MFA Registered? ${data.mfaRegistered}
-SSPR Offered? ${data.ssprOffered}
-SSPR Outcome: ${data.ssprOutcome}
-
-ISSUE DESCRIPTION:
-${data.issueDescription}
-
-RESOLUTION NOTES:
-${data.resolutionNotes}
-
-KB Article: ${data.kbArticle}
-Ticket Fulfilled: ${data.ticketFulfilled}
-Next Action(s): ${data.nextActions}
-
-User agreed to fulfill ticket? ${data.userAgreedFulfill}`;
-
-	return notes;
 }
 
 function exportSession(sessionName) {
@@ -787,62 +735,12 @@ function exportSession(sessionName) {
 
 	let textContent = "";
 
-	records.forEach((ticket, index) => {
+	records.forEach((record, index) => {
+		textContent += record.isIncident
+			? incidentTypeFormatter(record, record.isCaller)
+			: pwrTypeFormatter(record);
 		textContent += `
-========================================
-Record #${index + 1}
-========================================
-== CALLER ==
-
-Employee ID: ${ticket.employeeId}
-Name: ${ticket.fullName}
-User ID: ${ticket.userId}
-Email Address: ${ticket.email}
-Contact Number: ${ticket.contactNumber}
-Best time to reach: ${ticket.bestTimeToReach}
-Work Setup: ${ticket.workSetup}
-Location: ${ticket.location}
-
-== USER ==
-
-Employee ID: ${ticket.OBemployeeId}
-Name: ${ticket.OBfullName}
-User ID: ${ticket.OBuserId}
-Email Address: ${ticket.OBemail}
-Contact Number: ${ticket.OBcontactNumber}
-Best time to reach: ${ticket.OBbestTimeToReach}
-Work Setup: ${ticket.OBworkSetup}
-Location: ${ticket.OBlocation}
-
-Existing Ticket? ${ticket.existingTicket}
-Existing Ticket Number: ${ticket.existingTicketNumber}
-
-New Hire: ${ticket.newHire}
-MFA Registered? ${ticket.mfaRegistered}
-SSPR Offered? ${ticket.ssprOffered}
-
-User Declined SSPR? ${ticket.userDeclined}
-User Declined Reason: ${ticket.userDeclinedReason}
-User Attempted SSPR but Failed? ${ticket.userAttemptedSsprFailed}
-User SSPR Failure Details: ${ticket.ssprFailureDetails}
-
-ISSUE DESCRIPTION:
-${ticket.issueDescription}
-
-MINIMUM DATA SET:
-${ticket.minimumDataSet}
-
-KB Article: ${ticket.kbArticle}
-Nexthink? ${ticket.nexthink}
-
-Next Action(s): ${ticket.nextActions}
-
-Issue Resolved? ${ticket.issueResolved}
-User agreed to set ticket to Resolved?
-${ticket.userAgreedResolved}
-Resolution Notes: ${ticket.resolutionNotes}
-
-Ticket #: ${ticket.ticketNumber}
+=============================================================
 `;
 	});
 
@@ -861,64 +759,10 @@ Ticket #: ${ticket.ticketNumber}
 	URL.revokeObjectURL(url);
 }
 
-function exportIndividualRecord(ticket) {
-	const textContent = `
-========================================
-Individual Record
-========================================
-
-== CALLER ==
-
-Employee ID: ${ticket.employeeId}
-Name: ${ticket.fullName}
-User ID: ${ticket.userId}
-Email Address: ${ticket.email}
-Contact Number: ${ticket.contactNumber}
-Best time to reach: ${ticket.bestTimeToReach}
-Work Setup: ${ticket.workSetup}
-Location: ${ticket.location}
-
-== USER ==
-
-Employee ID: ${ticket.OBemployeeId}
-Name: ${ticket.OBfullName}
-User ID: ${ticket.OBuserId}
-Email Address: ${ticket.OBemail}
-Contact Number: ${ticket.OBcontactNumber}
-Best time to reach: ${ticket.OBbestTimeToReach}
-Work Setup: ${ticket.OBworkSetup}
-Location: ${ticket.OBlocation}
-
-Existing Ticket? ${ticket.existingTicket}
-Existing Ticket Number: ${ticket.existingTicketNumber}
-
-New Hire: ${ticket.newHire}
-MFA Registered? ${ticket.mfaRegistered}
-SSPR Offered? ${ticket.ssprOffered}
-
-User Declined SSPR? ${ticket.userDeclined}
-User Declined Reason: ${ticket.userDeclinedReason}
-User Attempted SSPR but Failed? ${ticket.userAttemptedSsprFailed}
-User SSPR Failure Details: ${ticket.ssprFailureDetails}
-
-ISSUE DESCRIPTION:
-${ticket.issueDescription}
-
-MINIMUM DATA SET:
-${ticket.minimumDataSet}
-
-KB Article: ${ticket.kbArticle}
-Nexthink? ${ticket.nexthink}
-
-Next Action(s): ${ticket.nextActions}
-
-Issue Resolved? ${ticket.issueResolved}
-User agreed to set ticket to Resolved?
-${ticket.userAgreedResolved}
-Resolution Notes: ${ticket.resolutionNotes}
-
-Ticket #: ${ticket.ticketNumber}
-`;
+function exportIndividualRecord(data) {
+	const textContent = data.isIncident
+		? incidentTypeFormatter(data, data.isCaller)
+		: pwrTypeFormatter(data);
 
 	const blob = new Blob([textContent], {
 		type: "text/plain",
@@ -928,7 +772,7 @@ Ticket #: ${ticket.ticketNumber}
 
 	const a = document.createElement("a");
 	a.href = url;
-	a.download = `${ticket.ticketNumber}.txt`;
+	a.download = `${data.fullName}.txt`;
 
 	a.click();
 
@@ -958,10 +802,83 @@ function initCreateNewSessionForm() {
 	});
 }
 
+function incidentTypeFormatter(data, isCaller) {
+	let ob = "";
+	if (!isCaller) {
+		ob = `
+USER
+Employee ID: ${data.OBemployeeId}
+Name: ${data.OBfullName}
+Email Address: ${data.OBemail}
+Contact Number: ${data.OBcontactNumber}
+Availability Hours: ${data.OBbestTimeToReach} ${data.OBtimezone}
+Location: ${data.OBlocation}
+`;
+	}
+
+	const documentation = `
+CALLER
+Employee ID: ${data.employeeId}
+Name: ${data.fullName}
+Email Address: ${data.email}
+Contact Number: ${data.contactNumber}
+Availability Hours: ${data.bestTimeToReach}${data.timezone}
+Location: ${data.location}
+${ob}
+Existing Ticket? ${data.existingTicket}
+Possible Major Incident? ${data.possibleMajorIncident}
+Contact Type: ${data.contactType}
+
+Machine Name: ${data.machineName}
+Nexthink Checklist: ${data.nexthinkChecklist}
+
+ISSUE DESCRIPTION:
+${data.issueDescription}
+
+RESOLUTION NOTES:
+${data.resolutionNotes} 
+
+KB Article: ${data.kbArticle}
+Issue Resolved? ${data.issueResolved}
+Next Action(s): ${data.nextActions}
+User agreed to set data to Resolved? ${data.userAgreedResolved}`;
+
+	return documentation;
+}
+
+function pwrTypeFormatter(data) {
+	const documentation = `
+Employee ID: ${data.employeeId}
+Name: ${data.fullName}
+Email Address: ${data.email}
+Contact Number: ${data.contactNumber}
+Availability Hours: ${data.bestTimeToReach} ${data.timezone}
+Location: ${data.location}
+Existing Ticket? ${data.existingTicket}
+
+New Hire: ${data.newHire}
+MFA Registered? ${data.mfaRegistered}
+SSPR Offered? ${data.ssprOffered}
+SSPR Outcome: ${data.ssprOutcome}
+
+ISSUE DESCRIPTION:
+${data.issueDescription}
+
+RESOLUTION NOTES:
+${data.resolutionNotes}
+
+KB Article: ${data.kbArticle}
+Ticket Fulfilled: ${data.ticketFulfilled}
+Next Action(s): ${data.nextActions}
+User agreed to fulfill ticket? ${data.userAgreedFulfill}`;
+
+	return documentation;
+}
+
 function init() {
-	window.addEventListener("beforeunload", (e) => {
-		e.preventDefault();
-	});
+	// window.addEventListener("beforeunload", (e) => {
+	// 	e.preventDefault();
+	// });
 
 	const isFreshStart = !storageState.resumeLastSession();
 	console.log(`isFreshStart: ${isFreshStart}`);
@@ -973,26 +890,65 @@ function init() {
 }
 
 function fillTestData() {
-	document.querySelector("[name=employeeId]").value = "12345678";
-	document.querySelector("[name=fullName]").value = "Kenjie Tarasona";
-	document.querySelector("[name=userId]").value = "KDCRUZ";
-	document.querySelector("[name=email]").value =
-		"kenjie.tarasona@nationalgrid.com";
-	document.querySelector("[name=contactNumber]").value = "09171234567";
-	document.querySelector("[name=location]").value = "Marikina";
+	const testData = {
+		employeeId: "7012345",
+		fullName: "John Doe",
+		email: "john.doe@nationalgrid.com",
+		contactNumber: "555-123-4567",
+		availability: "9am-4pm",
+		location: "Waltham Data Drive",
 
-	document.querySelector("[name=issueDescription]").value =
-		"User unable to sign in after password expiration.";
+		OBemployeeId: "7054321",
+		OBfullName: "Jane Smith",
+		OBemail: "jane.smith@nationalgrid.com",
+		OBcontactNumber: "555-987-6543",
+		OBavailability: "9am-4pm",
+		OBlocation: "Syracue Erie Blvd",
 
-	document.querySelector("[name=minimumDataSet]").value =
-		`Verified employee identity.
-Validated employee ID.
-Performed password reset via SSPR.
-Confirmed successful login.`;
+		existingTicket: "No",
+		machineName: "US-L-A1234",
+		nexthinkChecklist: "N/A",
+		ssprOutcome: "Successful",
 
-	document.querySelector("[name=kbArticle]").value = "KB123456";
-	document.querySelector("[name=ticketNumber]").value = "INC1234567";
+		issueDescription: `
+- User is trying to access myhub
+- Error message "Invalid Login"
+- User was able to access myhub before
+`,
+
+		resolutionNotes: `
+- Remote user via LMI.
+- Cleared Cache and Cookies
+- Removed Favorites folder/bookmark
+- Restart Browser
+- Accessed MyHub via Gridhome
+- Access Successful
+- Issue Resolved
+- Provided user ticket number
+- Confirmed with user ticket can now be set to resolved
+- End call`,
+
+		kbArticle: "KB0000111",
+	};
+
+	Object.entries(testData).forEach(([name, value]) => {
+		const field = document.querySelector(`[name="${name}"]`);
+
+		if (field) {
+			field.value = value;
+
+			const switchButton = field.parentElement?.querySelector(".switch-click");
+
+			if (switchButton) {
+				switchButton.textContent = value;
+			}
+		}
+	});
+
+	if (typeof fieldState !== "undefined") {
+		fieldState.setFieldModified(true);
+	}
 }
 
-init();
 document.querySelector("#fillTestData").addEventListener("click", fillTestData);
+init();
