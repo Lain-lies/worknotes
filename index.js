@@ -307,17 +307,17 @@ const fieldState = {
 
 		this.setupSwitchClick(
 			document.querySelector("[name=newHire]"),
-			defaultOptionTwo,
+			defaultOptionThree,
 		);
 
 		this.setupSwitchClick(
 			document.querySelector("[name=mfaRegistered]"),
-			defaultOptionOne,
+			defaultOptionThree,
 		);
 
 		this.setupSwitchClick(
 			document.querySelector("[name=ssprOffered]"),
-			defaultOptionOne,
+			defaultOptionThree,
 		);
 
 		this.setupSwitchClick(document.querySelector("[name=nextActions]"), [
@@ -333,23 +333,23 @@ const fieldState = {
 		// INC DOCTYPE
 		this.setupSwitchClick(
 			document.querySelector("[name=issueResolved]"),
-			defaultOptionOne,
+			defaultOptionThree,
 		);
 
 		this.setupSwitchClick(
 			document.querySelector("[name=userAgreedResolved]"),
-			defaultOptionOne,
+			defaultOptionThree,
 		);
 
 		// PWR DOCTYPE
 		this.setupSwitchClick(
 			document.querySelector("[name=ticketFulfilled]"),
-			defaultOptionOne,
+			defaultOptionThree,
 		);
 
 		this.setupSwitchClick(
 			document.querySelector("[name=userAgreedFulfill]"),
-			defaultOptionOne,
+			defaultOptionThree,
 		);
 	},
 

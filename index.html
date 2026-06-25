@@ -109,7 +109,7 @@
 					alt="Flownotes Logo" />
 			</div>
 		</header>
-		<p>ver 1.0.0</p>
+		<p>ver 1.0.2</p>
 
 		<div class="control-panel">
 			<form id="createSessionForm">
@@ -327,10 +327,25 @@
 					<input type="input" name="ssprOffered" />
 				</label>
 
-				<label>
-					SSPR Outcome:
-					<input type="input" name="ssprOutcome" value="N/A" />
-				</label>
+				<label for="ssprOutcome">SSPR Outcome</label>
+
+				<select name="pets" id="ssprOutcome">
+					<option value="N/A">N/A</option>
+					<option value="User Refused">User Refused</option>
+					<option value="Failed">Failed</option>
+					<option value="Error">Error</option>
+				</select>
+		
+				<label for="na-details">N/A details:</label>
+
+				<select name="na-details" id="na-details">
+					<option value="N/A">User is not yet registered to MFA.</option>
+					<option value="User Refused">User just had a password reset within 24 hours.</option>
+					<option value="Failed">User is calling for an admin account.</option>
+					<option value="Error">User's AD account is locked out.</option>
+					<option value="Error">User's AD account is deactivated/disabled.</option>
+				</select>
+
 			</div>
 
 			<hr />
@@ -366,7 +381,7 @@
 					<input type="input" name="issueResolved" />
 				</label>
 			</div>
-			
+
 			<label>
 				Resolution Notes:
 				<input type="input" name="resolutionNotes" placeholder="Detailed step that resolved the issue"></textarea>
