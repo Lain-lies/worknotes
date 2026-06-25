@@ -444,7 +444,7 @@ const fieldState = {
 	},
 
 	initAutoFillMinimumDataSet: function () {
-		const element = document.querySelector("[name=resolutionNotes]");
+		const element = document.querySelector("[name=ts]");
 		const parent = element.parentElement;
 
 		const buttonOne = document.createElement("button");
@@ -513,9 +513,7 @@ const fieldState = {
 	},
 
 	initTextAreaAutoFormat: function () {
-		const resolutionNotesElement = document.querySelector(
-			"[name=resolutionNotes]",
-		);
+		const resolutionNotesElement = document.querySelector("[name=ts]");
 
 		resolutionNotesElement.addEventListener("keydown", (e) => {
 			if (e.key === "Enter") {
@@ -835,8 +833,11 @@ Nexthink Checklist: ${data.nexthinkChecklist}
 ISSUE DESCRIPTION:
 ${data.issueDescription}
 
+TROUBLESHOOTING STEPS:
+${data.ts}
+
 RESOLUTION NOTES:
-${data.resolutionNotes} 
+${data.resolutionNotes}
 
 KB Article: ${data.kbArticle}
 Issue Resolved? ${data.issueResolved}
@@ -863,6 +864,9 @@ SSPR Outcome: ${data.ssprOutcome}
 
 ISSUE DESCRIPTION:
 ${data.issueDescription}
+
+TROUBLESHOOTING STEPS:
+${data.ts}
 
 RESOLUTION NOTES:
 ${data.resolutionNotes}

@@ -18,6 +18,10 @@
 				margin-bottom: 1rem;
 			}
 
+			input[name="resolutionNotes"]{
+				width:100%;
+			}
+
 			textarea {
 				width: 100%;
 			}
@@ -341,8 +345,8 @@
 			</label>
 
 			<label>
-				Resolution Notes:
-				<textarea name="resolutionNotes" rows="10"></textarea>
+				Troubleshooting Steps:
+				<textarea name="ts" rows="10"></textarea>
 			</label>
 
 			<hr />
@@ -362,6 +366,11 @@
 					<input type="input" name="issueResolved" />
 				</label>
 			</div>
+			
+			<label>
+				Resolution Notes:
+				<input type="input" name="resolutionNotes" placeholder="Detailed step that resolved the issue"></textarea>
+			</label>
 
 			<div class="pwr">
 				<label>
