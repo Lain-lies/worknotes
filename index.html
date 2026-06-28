@@ -18,8 +18,8 @@
 				margin-bottom: 1rem;
 			}
 
-			input[name="resolutionNotes"]{
-				width:100%;
+			input[name="resolutionNotes"] {
+				width: 100%;
 			}
 
 			textarea {
@@ -97,6 +97,18 @@
 
 			.availability-container > button {
 				font-size: 0.8rem;
+			}
+
+			.adpwrWrapper {
+				display: none;
+			}
+
+			.visible {
+				display: block;
+			}
+
+			.hidden {
+				display: none;
 			}
 		</style>
 	</head>
@@ -281,17 +293,17 @@
 			</div>
 			<hr />
 
+			<label>
+				Existing Ticket?:
+				<input type="input" name="existingTicket" value="No" />
+			</label>
+
 			<div class="inc">
 				<label>
 					Possible Major Incident?
 					<input type="input" name="possibleMajorIncident" />
 				</label>
 			</div>
-
-			<label>
-				Existing Ticket?:
-				<input type="input" name="existingTicket" value="No" />
-			</label>
 
 			<div class="inc">
 				<label>
@@ -312,6 +324,11 @@
 			</div>
 
 			<div class="pwr">
+				<p>Active Directory Password Reset?:</p>
+				<button type="button" id="adpwrSwitch">No</button>
+			</div>
+
+			<div class="adpwrWrapper">
 				<label>
 					New Hire:
 					<input type="input" name="newHire" />
@@ -329,23 +346,68 @@
 
 				<label for="ssprOutcome">SSPR Outcome</label>
 
-				<select name="pets" id="ssprOutcome">
-					<option value="N/A">N/A</option>
-					<option value="User Refused">User Refused</option>
-					<option value="Failed">Failed</option>
-					<option value="Error">Error</option>
-				</select>
-		
-				<label for="na-details">N/A details:</label>
+				<select name="ssprOutcome" id="ssprOutcome">
+					<optgroup label="SSPR Offered: No" id="noOptGroup">
+						<option value="N/A: User is not yet registered to MFA.">
+							N/A: User is not yet registered to MFA.
+						</option>
+						<option
+							value="N/A: User just had a password reset within 24 hours.">
+							N/A: User just had a password reset within 24 hours.
+						</option>
+						<option value="N/A: User is calling for an admin account.">
+							N/A: User is calling for an admin account.
+						</option>
+						<option value="N/A: User's AD account is locked out.">
+							N/A: User's AD account is locked out.
+						</option>
+						<option value="N/A: User's AD account is deactivated/disabled.">
+							N/A: User's AD account is deactivated/disabled.
+						</option>
+					</optgroup>
 
-				<select name="na-details" id="na-details">
-					<option value="N/A">User is not yet registered to MFA.</option>
-					<option value="User Refused">User just had a password reset within 24 hours.</option>
-					<option value="Failed">User is calling for an admin account.</option>
-					<option value="Error">User's AD account is locked out.</option>
-					<option value="Error">User's AD account is deactivated/disabled.</option>
-				</select>
+					<optgroup label="SSPR Offered: Yes" id="yesOptGroup" hidden>
+						<option
+							value="User refused: User prefers the agent to do the password change.">
+							User refused: User prefers the agent to do the password change.
+						</option>
+						<option
+							value="User refused: User don't want to use their mobile phone.">
+							User refused: User don't want to use their mobile phone.
+						</option>
+						<option
+							value="User refused: User prefers to keep their current password.">
+							User refused: User prefers to keep their current password.
+						</option>
 
+						<option value="Failed: User cannot correctly input the CAPTCHA.">
+							Failed: User cannot correctly input the CAPTCHA.
+						</option>
+						<option
+							value="Failed: User unable to change their password due to complexity requirements.">
+							Failed: User unable to change their password due to complexity
+							requirements.
+						</option>
+						<option
+							value="Failed: The user forgot the answers to the security questions.">
+							Failed: The user forgot the answers to the security questions.
+						</option>
+						<option value="Failed: User was disconnected.">
+							Failed: User was disconnected.
+						</option>
+
+						<option value="Error: User is unable to access aka.ms/sspr.">
+							Error: User is unable to access aka.ms/sspr.
+						</option>
+						<option
+							value="Error: Account doesn't exist. Contact administrator.">
+							Error: Account doesn't exist. Contact administrator.
+						</option>
+						<option value="Error: You haven't registered for a password reset.">
+							Error: You haven't registered for a password reset.
+						</option>
+					</optgroup>
+				</select>
 			</div>
 
 			<hr />
@@ -384,7 +446,10 @@
 
 			<label>
 				Resolution Notes:
-				<input type="input" name="resolutionNotes" placeholder="Detailed step that resolved the issue"></textarea>
+				<input
+					type="input"
+					name="resolutionNotes"
+					placeholder="Detailed step that resolved the issue" />
 			</label>
 
 			<div class="pwr">

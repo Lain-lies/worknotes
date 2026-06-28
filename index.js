@@ -64,7 +64,7 @@ const storageState = {
 		this.setRecord(sessionData);
 		this.setCurrentSessionName(sessionName);
 
-		alert(`Session Loaded: ${this.getCurrentSessionName()}`);
+		// alert(`Session Loaded: ${this.getCurrentSessionName()}`);
 		console.log(`
 Current Session: ${this.getCurrentSessionName()}
 Current Record: ${this.getRecord()}
@@ -107,6 +107,66 @@ Session List: ${this.getSessionList()}`);
 	},
 };
 
+const ssprFieldManager = {
+	choices: ["No", "Yes"],
+
+	init() {
+		const adpwrWrapper = document.querySelector(".adpwrWrapper");
+		const adpwrSwitch = document.querySelector("#adpwrSwitch");
+		let choice = 0;
+
+		adpwrSwitch.addEventListener("click", (e) => {
+			adpwrWrapper.classList.toggle("visible");
+			choice = 1 - choice;
+			adpwrSwitch.textContent = this.choices[choice];
+		});
+
+		this.initOfferAndOutcome();
+	},
+
+	initOfferAndOutcome() {
+		const noOptGroup = document.querySelector("#noOptGroup");
+		const yesOptGroup = document.querySelector("#yesOptGroup");
+
+		const handler = () => {
+			noOptGroup.hidden = !noOptGroup.hidden;
+			yesOptGroup.hidden = !yesOptGroup.hidden;
+
+			console.log(noOptGroup.hidden);
+		};
+
+		const ssprOfferedButton = setupSwitch(
+			document.querySelector("[name=ssprOffered]"),
+			[...this.choices],
+			handler,
+		);
+	},
+};
+
+function setupSwitch(element, options, handler = null) {
+	let current = 0;
+
+	element.value = options[current];
+	element.style.display = "none";
+
+	const parent = element.parentElement;
+	const button = document.createElement("button");
+
+	button.textContent = options[current];
+	button.type = "button";
+
+	button.addEventListener("click", () => {
+		current = 1 - current;
+		button.textContent = options[current];
+		element.value = options[current];
+		if (handler !== null) {
+			handler();
+		}
+	});
+
+	parent.appendChild(button);
+}
+
 const fieldState = {
 	fieldElement: document.querySelector("#ticketForm"),
 	fieldCallTypeButton: document.querySelector("#calltype"),
@@ -120,6 +180,8 @@ const fieldState = {
 	fieldData: {},
 	fieldIsCaller: true,
 	fieldIsIncident: true,
+	fieldIsAD: false,
+	fieldIsResolved: false,
 
 	// SETTERS //
 
@@ -168,6 +230,7 @@ const fieldState = {
 	// HELPERS //
 
 	onSaveHelper: function (data) {
+		console.log(data);
 		if (this.getFieldModified() === false) {
 			alert("No changes detected! Please modify the form before saving.");
 			return;
@@ -177,8 +240,7 @@ const fieldState = {
 			this.setFieldSaved(true);
 		}
 
-		console.log(data.isCaller);
-		console.log(data.isIncident);
+		// console.log(data);
 		this.setFieldData(data);
 		copyToClipboard(data);
 
@@ -315,11 +377,6 @@ const fieldState = {
 			defaultOptionThree,
 		);
 
-		this.setupSwitchClick(
-			document.querySelector("[name=ssprOffered]"),
-			defaultOptionThree,
-		);
-
 		this.setupSwitchClick(document.querySelector("[name=nextActions]"), [
 			"N/A",
 			"Waiting for Line-Manager Approval",
@@ -409,6 +466,7 @@ const fieldState = {
 			if (this.getFieldIsCaller() === true) {
 				this.setFieldIsCaller(false);
 				this.fieldOnBehalfContainerElement.style.display = "block";
+				1;
 				e.target.textContent = "On Behalf";
 			} else {
 				this.setFieldIsCaller(true);
@@ -912,8 +970,6 @@ function fillTestData() {
 		existingTicket: "No",
 		machineName: "US-L-A1234",
 		nexthinkChecklist: "N/A",
-		ssprOutcome: "Successful",
-
 		issueDescription: `
 - User is trying to access myhub
 - Error message "Invalid Login"
@@ -955,4 +1011,6 @@ function fillTestData() {
 }
 
 document.querySelector("#fillTestData").addEventListener("click", fillTestData);
+
 init();
+ssprFieldManager.init();
