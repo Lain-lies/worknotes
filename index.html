@@ -68,7 +68,7 @@
 				margin-bottom: 1rem;
 			}
 
-			.switch-click {
+			.switch-btn {
 				margin-top: 0.5rem;
 				font-size: 1rem;
 				padding: 0.5rem 1rem;
@@ -110,6 +110,11 @@
 			.hidden {
 				display: none;
 			}
+
+			[name="nextActions"] {
+				display: block;
+				margin-bottom: 1rem;
+			}
 		</style>
 	</head>
 	<body>
@@ -121,7 +126,7 @@
 					alt="Flownotes Logo" />
 			</div>
 		</header>
-		<p>ver 1.0.2</p>
+		<p>ver 1.1.0</p>
 
 		<div class="control-panel">
 			<form id="createSessionForm">
@@ -162,8 +167,8 @@
 				<h3>Call Type:</h3>
 				<button type="button" id="calltype">Caller</button>
 
-				<h3>Document Type:</h3>
-				<button type="button" id="doctype">Incident</button>
+				<h3>Template Type:</h3>
+				<button type="button" id="doctype">Standard</button>
 			</div>
 
 			<h3>Caller</h3>
@@ -213,7 +218,12 @@
 						value="9am-4pm"
 						required />
 				</label>
-				<input type="text" name="timezone" value="EST" required />
+
+				<select name="timezone">
+					<option value="EST" default>EST</option>
+					<option value="DST" default>DST</option>
+					<option value="IST" default>IST</option>
+				</select>
 			</div>
 
 			<label>
@@ -277,8 +287,11 @@
 							value="9am-4pm"
 							required />
 					</label>
-
-					<input type="text" name="OBtimezone" value="EST" required />
+					<select name="OBtimezone">
+						<option value="EST" default>EST</option>
+						<option value="DST">DST</option>
+						<option value="IST">IST</option>
+					</select>
 				</div>
 
 				<label>
@@ -437,12 +450,10 @@
 					required />
 			</label>
 
-			<div class="inc">
-				<label>
-					Issue Resolved?
-					<input type="input" name="issueResolved" />
-				</label>
-			</div>
+			<label for="issueResolved">
+				<span>Issue Resolved?</span>
+				<input type="input" name="issueResolved" id="issueResolved" />
+			</label>
 
 			<label>
 				Resolution Notes:
@@ -452,35 +463,25 @@
 					placeholder="Detailed step that resolved the issue" />
 			</label>
 
-			<div class="pwr">
-				<label>
-					Ticket Fulfilled?
-					<input type="input" name="ticketFulfilled" />
-				</label>
-			</div>
+			<label for="nextActions"> Next Action(s): </label>
+			<select name="nextActions" id="nextActions">
+				<option value="N/A" default>N/A</option>
+				<option value="Wait for Line-Manager Approval">
+					Wait for Line-Manager Approval
+				</option>
+				<option value="Route the ticket to the next resolver team">
+					Route the ticket to the next resolver team
+				</option>
+				<option value="Set ticket to pending">Set ticket to pending</option>
+				<option value="Set ticket to resolved">Set ticket to resolved</option>
+				<option value="Set ticket to fulfilled">Set ticket to fulfilled</option>
+				<option value="Cancel ticket">Cancel ticket</option>
+			</select>
 
-			<label>
-				Next Action(s):
-				<textarea
-					name="nextActions"
-					rows="4"
-					cols="50"
-					placeholder="Enter next actions"></textarea>
+			<label for="userAgreedResolved">
+				<span>User agreed to set ticket to Resolved?</span>
+				<input type="iput" name="userAgreedResolved" id="userAgreedResolved" />
 			</label>
-
-			<div class="inc">
-				<label>
-					User agreed to set ticket to Resolved?
-					<input type="iput" name="userAgreedResolved" />
-				</label>
-			</div>
-
-			<div class="pwr">
-				<label>
-					User agreed to fulfill the ticket?
-					<input type="iput" name="userAgreedFulfill" />
-				</label>
-			</div>
 
 			<hr />
 			<button type="submit" id="saveTicketButton">Save Ticket</button>
@@ -495,7 +496,7 @@
 			<p>
 				Flownotes &copy; 2026 | GitHub:
 				<a href="https://github.com/Lain-lies/worknotes" target="_blank"
-					>worknotes</a
+					>Flownotes</a
 				>
 			</p>
 		</footer>

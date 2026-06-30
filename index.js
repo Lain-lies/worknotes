@@ -107,71 +107,51 @@ Session List: ${this.getSessionList()}`);
 	},
 };
 
-const ssprFieldManager = {
-	choices: ["No", "Yes"],
+// const ssprFieldManager = {
 
-	init() {
-		const adpwrWrapper = document.querySelector(".adpwrWrapper");
-		const adpwrSwitch = document.querySelector("#adpwrSwitch");
-		let choice = 0;
+// 	init() {
+// 		const adpwrWrapper = document.querySelector(".adpwrWrapper");
+// 		const adpwrSwitch = document.querySelector("#adpwrSwitch");
+// 		let choice = 0;
 
-		adpwrSwitch.addEventListener("click", (e) => {
-			adpwrWrapper.classList.toggle("visible");
-			choice = 1 - choice;
-			adpwrSwitch.textContent = this.choices[choice];
-		});
+// 		adpwrSwitch.addEventListener("click", (e) => {
+// 			adpwrWrapper.classList.toggle("visible");
+// 			choice = 1 - choice;
+// 			adpwrSwitch.textContent = this.choices[choice];
+// 		});
 
-		this.initOfferAndOutcome();
-	},
+// 		this.initOfferAndOutcome();
+// 	},
 
-	initOfferAndOutcome() {
-		const noOptGroup = document.querySelector("#noOptGroup");
-		const yesOptGroup = document.querySelector("#yesOptGroup");
+// 	initOfferAndOutcome() {
+// 		const noOptGroup = document.querySelector("#noOptGroup");
+// 		const yesOptGroup = document.querySelector("#yesOptGroup");
 
-		const handler = () => {
-			noOptGroup.hidden = !noOptGroup.hidden;
-			yesOptGroup.hidden = !yesOptGroup.hidden;
+// 		const handler = () => {
+// 			noOptGroup.hidden = !noOptGroup.hidden;
+// 			yesOptGroup.hidden = !yesOptGroup.hidden;
 
-			console.log(noOptGroup.hidden);
-		};
+// 			console.log(noOptGroup.hidden);
+// 		};
 
-		const ssprOfferedButton = setupSwitch(
-			document.querySelector("[name=ssprOffered]"),
-			[...this.choices],
-			handler,
-		);
-	},
-};
-
-function setupSwitch(element, options, handler = null) {
-	let current = 0;
-
-	element.value = options[current];
-	element.style.display = "none";
-
-	const parent = element.parentElement;
-	const button = document.createElement("button");
-
-	button.textContent = options[current];
-	button.type = "button";
-
-	button.addEventListener("click", () => {
-		current = 1 - current;
-		button.textContent = options[current];
-		element.value = options[current];
-		if (handler !== null) {
-			handler();
-		}
-	});
-
-	parent.appendChild(button);
-}
+// 		const ssprOfferedButton = setupSwitch(
+// 			document.querySelector("[name=ssprOffered]"),
+// 			[...this.choices],
+// 			handler,
+// 		);
+// 	},
+// };
 
 const fieldState = {
 	fieldElement: document.querySelector("#ticketForm"),
 	fieldCallTypeButton: document.querySelector("#calltype"),
 	fieldDocTypeButton: document.querySelector("#doctype"),
 	fieldOnBehalfContainerElement: document.querySelector("#onbehalf"),
+	fieldIsResolvedText: document.querySelector("[for=issueResolved] > span"),
+	fieldUserAgreedText: document.querySelector(
+		"[for=userAgreedResolved] > span",
+	),
+	
 	fieldPwrNodes: document.querySelectorAll(".pwr"),
 	fieldIncNodes: document.querySelectorAll(".inc"),
 
@@ -252,7 +232,7 @@ const fieldState = {
 		this.setFieldModified(false);
 		this.setFieldSaved(false);
 		this.setFieldData({});
-		this.resetSwitchClick();
+		this.resetSwitch();
 		this.resetFieldConditions();
 		window.location.href = "#ticketForm";
 	},
@@ -332,111 +312,49 @@ const fieldState = {
 		return filteredDataTwo;
 	},
 
-	// SWITCH CLICK //
-
-	initSwitchClick: function () {
-		const defaultOptionOne = ["N/A", "Yes", "No"];
-		const defaultOptionTwo = ["No", "Yes", "N/A"];
-		const defaultOptionThree = ["No", "Yes"];
-		const workSetupOptions = ["WFH", "Office", "Field"];
-		const OBworkSetupOptions = ["N/A", "WFH", "Office", "Field"];
-
-		this.setupSwitchClick(document.querySelector("[name=timezone]"), [
-			"EST",
-			"DST",
-			"IST",
-		]);
-
-		this.setupSwitchClick(document.querySelector("[name=OBtimezone]"), [
-			"EST",
-			"DST",
-			"IST",
-		]);
+	// SWITCH //
+	initSwitch: function () {
 		// INC DOCTYPE
-
-		this.setupSwitchClick(
-			document.querySelector("[name=possibleMajorIncident]"),
-			defaultOptionThree,
-		);
-
-		this.setupSwitchClick(document.querySelector("[name=contactType]"), [
+		this.setupSwitch(document.querySelector("[name=possibleMajorIncident]"));
+		this.setupSwitch(document.querySelector("[name=contactType]"), [
 			"Phone",
 			"Chat",
-			"Web",
 		]);
 
 		// PWR DOCTYPE
+		this.setupSwitch(document.querySelector("[name=newHire]"));
+		this.setupSwitch(document.querySelector("[name=mfaRegistered]"));
 
-		this.setupSwitchClick(
-			document.querySelector("[name=newHire]"),
-			defaultOptionThree,
-		);
-
-		this.setupSwitchClick(
-			document.querySelector("[name=mfaRegistered]"),
-			defaultOptionThree,
-		);
-
-		this.setupSwitchClick(document.querySelector("[name=nextActions]"), [
-			"N/A",
-			"Waiting for Line-Manager Approval",
-			"Route the ticket to the next resolver team",
-			"Set ticket to pending",
-			"Set ticket to resolved",
-			"Set ticket to fulfilled",
-			"Cancel ticket",
-		]);
-
-		// INC DOCTYPE
-		this.setupSwitchClick(
-			document.querySelector("[name=issueResolved]"),
-			defaultOptionThree,
-		);
-
-		this.setupSwitchClick(
-			document.querySelector("[name=userAgreedResolved]"),
-			defaultOptionThree,
-		);
-
-		// PWR DOCTYPE
-		this.setupSwitchClick(
-			document.querySelector("[name=ticketFulfilled]"),
-			defaultOptionThree,
-		);
-
-		this.setupSwitchClick(
-			document.querySelector("[name=userAgreedFulfill]"),
-			defaultOptionThree,
-		);
+		this.setupSwitch(document.querySelector("[name=issueResolved]"));
+		this.setupSwitch(document.querySelector("[name=userAgreedResolved]"));
 	},
 
-	setupSwitchClick: function (element, options) {
-		let currentOptionIndex = 0;
+	setupSwitch(element, options = ["No", "Yes"], handler = null) {
+		let current = 0;
 
-		element.value = options[currentOptionIndex];
+		element.value = options[current];
 		element.style.display = "none";
 
 		const parent = element.parentElement;
-
 		const button = document.createElement("button");
 
-		button.textContent = options[currentOptionIndex];
+		button.textContent = options[current];
 		button.type = "button";
-		button.classList.add("switch-click");
+		button.classList.add("switch-btn");
 
 		button.addEventListener("click", () => {
-			currentOptionIndex++;
-			if (currentOptionIndex === options.length) {
-				currentOptionIndex = 0;
+			current = 1 - current;
+			button.textContent = options[current];
+			element.value = options[current];
+			if (handler !== null) {
+				handler();
 			}
-			element.value = options[currentOptionIndex];
-			button.textContent = options[currentOptionIndex];
 		});
 
 		parent.appendChild(button);
 	},
 
-	resetSwitchClick: function () {
+	resetSwitch: function () {
 		const switchClickButtons = document.querySelectorAll(".switch-click");
 
 		switchClickButtons.forEach((button) => {
@@ -488,6 +406,10 @@ const fieldState = {
 					(element) => (element.style.display = "block"),
 				);
 				e.target.textContent = "Password Reset";
+
+				this.fieldIsResolvedText.textContent = "Ticket Fulfilled?";
+				this.fieldUserAgreedText.textContent =
+					"User agreed to set ticket to Fulfilled?";
 			} else {
 				this.setFieldIsIncident(true);
 				this.fieldIncNodes.forEach(
@@ -497,6 +419,9 @@ const fieldState = {
 					(element) => (element.style.display = "none"),
 				);
 				e.target.textContent = "Incident";
+				this.fieldIsResolvedText.textContent = "Issue Resolved?";
+				this.fieldUserAgreedText.textContent =
+					"User agreed to set ticket to Resolved?";
 			}
 		});
 	},
@@ -662,7 +587,7 @@ const fieldState = {
 		});
 
 		this.initFieldConditions();
-		this.initSwitchClick();
+		this.initSwitch();
 		this.initAutoFillMinimumDataSet();
 		this.initTextAreaAutoFormat();
 		this.initKBShortcut();
@@ -905,7 +830,7 @@ User agreed to set data to Resolved? ${data.userAgreedResolved}`;
 	return documentation;
 }
 
-function pwrTypeFormatter(data) {
+function pwrTypeFormatter(data, isAD) {
 	const documentation = `
 Employee ID: ${data.employeeId}
 Name: ${data.fullName}
@@ -1013,4 +938,5 @@ function fillTestData() {
 document.querySelector("#fillTestData").addEventListener("click", fillTestData);
 
 init();
-ssprFieldManager.init();
+// document.querySelector("[for=userAgreedResolved] > span").textContent = " test";
+// ssprFieldManager.init();
